@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,17 +26,17 @@ namespace Hw_9_API.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet("[action]")]
+        public async Task<Jokes> GetJoke()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            HttpClient client = new HttpClient();
+
+            string url = "http://api.icndb.com/jokes/random";
+
+            client.BaseAddress = new Uri(url);
+            var result = await client.GetFromJsonAsync<Jokes>("");
+            return result.joke;
+            
         }
     }
 }
